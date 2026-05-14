@@ -18,10 +18,11 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
 
   return (
     <motion.div 
+      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] bg-white border-[4px] border-[#111111] p-6 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] hover:shadow-[12px_12px_0px_0px_rgba(17,17,17,1)] hover:-translate-y-1 hover:-translate-x-1 transition-all duration-200"
+      whileHover={{ y: -4, scale: 1.01, transition: { duration: 0.2 } }}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] bg-white border-[4px] border-[#111111] p-6 shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] hover:shadow-[12px_12px_0px_0px_rgba(17,17,17,1)] transition-all duration-200"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#FFEB3B] to-transparent rounded-bl-full -z-10 transition-transform group-hover:scale-150" />
       
@@ -76,15 +77,23 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
           {formatDistanceToNowStrict(new Date(opportunity.deadline), { addSuffix: true })}
         </div>
         
-        <a 
+        <motion.a 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           href={opportunity.apply_link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-black text-white bg-[#FF0080] hover:bg-[#111111] px-5 py-3 border-[3px] border-[#111111] rounded-xl shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all uppercase tracking-wider"
+          className="inline-flex items-center gap-2 text-sm font-black text-white bg-[#FF0080] hover:bg-[#111111] px-5 py-3 border-[3px] border-[#111111] rounded-xl shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] hover:shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] transition-colors uppercase tracking-wider"
         >
           VIEW
-          <ArrowUpRight size={20} strokeWidth={4} />
-        </a>
+          <motion.div
+            initial={{ x: 0, y: 0 }}
+            whileHover={{ x: 3, y: -3 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <ArrowUpRight size={20} strokeWidth={4} />
+          </motion.div>
+        </motion.a>
       </div>
     </motion.div>
   );
