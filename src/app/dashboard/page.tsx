@@ -236,11 +236,30 @@ export default function Dashboard() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 }
+                }
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
               {opportunities.map((opp) => (
-                <OpportunityCard key={opp.id} opportunity={opp} />
+                <motion.div
+                  key={opp.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                >
+                  <OpportunityCard opportunity={opp} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </div>
       )}
