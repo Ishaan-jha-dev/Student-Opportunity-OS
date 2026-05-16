@@ -25,6 +25,7 @@ async function fetchLinkedInInternships(filterQuery: string, domain: string, lim
             description: `Apply for the ${job.position} position at ${job.company}. Location: ${job.location}. Posted: ${job.date}`,
             eligibility: 'See LinkedIn posting for full eligibility criteria.',
             apply_link: job.jobUrl,
+            stipend: job.salary && job.salary !== 'Not specified' ? job.salary : 'Unpaid',
             created_at: new Date(),
         }));
     } catch (e) {
@@ -65,6 +66,7 @@ async function fetchUnstopCompetitions(filterQuery: string, domain: string): Pro
             description: item.prizes_description || `Join this ${item.opportunity_type} organized by ${item.organisation?.name}.`,
             eligibility: `Mode: ${item.mode}. See unstop page for full criteria.`,
             apply_link: `https://unstop.com/${item.public_url}`,
+            stipend: 'Varies',
             created_at: new Date(),
         }));
     } catch (e) {
@@ -95,9 +97,15 @@ export async function getOpportunities(filter?: OpportunityFilter): Promise<Oppo
     const scrapedResults = await Promise.all(fetchPromises);
     results = scrapedResults.flat();
 
+    if (filter?.stipend === 'paid') {
+        results = results.filter(o => o.stipend && o.stipend !== 'Unpaid' && o.stipend !== 'Varies');
+    }
+
     // Fallback if scraping returns nothing
-    if (results.length === 0) {
+    if (results.length === 0 && (!filter || filter.stipend !== 'paid')) {
       console.log("Scrapers returned empty, falling back to mock data");
+      return getMockOpportunities(filter);
+    } else if (results.length === 0) {
       return getMockOpportunities(filter);
     }
 
@@ -133,6 +141,9 @@ function getMockOpportunities(filter?: OpportunityFilter): Opportunity[] {
   }
   if (filter?.difficulty) {
     filtered = filtered.filter(o => o.difficulty === filter.difficulty);
+  }
+  if (filter?.stipend === 'paid') {
+    filtered = filtered.filter(o => o.stipend && o.stipend !== 'Unpaid' && o.stipend !== 'Varies');
   }
 
   // Sort by deadline

@@ -26,5 +26,6 @@ model Opportunity {
   description String
   eligibility String
   apply_link  String
+  stipend     String?
   created_at  DateTime @default(now())
 }

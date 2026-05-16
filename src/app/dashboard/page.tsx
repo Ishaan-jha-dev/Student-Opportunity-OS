@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [query, setQuery] = useState('');
   const [type, setType] = useState<'internship' | 'competition' | null>(null);
   const [domain, setDomain] = useState<string | null>(null);
+  const [stipendFilter, setStipendFilter] = useState<'all' | 'paid'>('all');
 
   const domains = ['Tech', 'Finance', 'Marketing', 'Consulting', 'Management', 'Data'];
 
@@ -35,7 +36,7 @@ export default function Dashboard() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query && !type && !domain) return;
-    executeSearch({ query, type: type || 'all', domain: domain || 'all' });
+    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: stipendFilter });
   };
 
   const handleTypeSelect = (selectedType: 'internship' | 'competition') => {
@@ -45,7 +46,7 @@ export default function Dashboard() {
 
   const handleDomainSelect = (selectedDomain: string) => {
     setDomain(selectedDomain);
-    executeSearch({ query, type: type || 'all', domain: selectedDomain });
+    executeSearch({ query, type: type || 'all', domain: selectedDomain, stipend: stipendFilter });
   };
 
   const resetSearch = () => {
@@ -54,6 +55,7 @@ export default function Dashboard() {
     setType(null);
     setDomain(null);
     setQuery('');
+    setStipendFilter('all');
   };
 
   return (
@@ -209,6 +211,20 @@ export default function Dashboard() {
                 "{query}"
               </span>
             )}
+            <div className="ml-auto flex items-center gap-2">
+               <select 
+                 value={stipendFilter}
+                 onChange={(e) => {
+                    const newFilter = e.target.value as 'all' | 'paid';
+                    setStipendFilter(newFilter);
+                    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: newFilter });
+                 }}
+                 className="bg-white hover:bg-[#111111] hover:text-[#FFEB3B] transition-colors border-[3px] border-[#111111] px-5 py-2.5 rounded-xl font-black text-[#111111] shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] outline-none cursor-pointer uppercase tracking-wider"
+               >
+                 <option value="all" className="bg-white text-[#111111]">Any Stipend</option>
+                 <option value="paid" className="bg-white text-[#111111]">Paid Only</option>
+               </select>
+            </div>
           </div>
 
           {loading ? (

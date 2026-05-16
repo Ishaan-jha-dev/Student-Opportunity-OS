@@ -2,7 +2,7 @@
 
 import { Opportunity } from '@/types/opportunity';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Calendar, Building, Briefcase, Trophy, ArrowUpRight, Flame } from 'lucide-react';
+import { Calendar, Building, Briefcase, Trophy, ArrowUpRight, Flame, Banknote } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface OpportunityCardProps {
@@ -68,6 +68,11 @@ export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
           }`}>
             {opportunity.difficulty}
           </span>
+          {opportunity.stipend && (
+            <span className="px-3 py-1.5 text-xs font-black rounded-xl bg-[#1890FF] text-white border-[3px] border-[#111111] shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] uppercase flex items-center gap-1.5">
+              <Banknote size={14} strokeWidth={3} /> {opportunity.stipend}
+            </span>
+          )}
         </div>
       </div>
 
