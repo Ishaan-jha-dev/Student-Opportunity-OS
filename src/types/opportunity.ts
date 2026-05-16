@@ -12,4 +12,5 @@ export interface OpportunityFilter {
   domain?: string;
   difficulty?: Difficulty | '';
   stipend?: 'paid' | 'all';
+  stipendMin?: number;
 }

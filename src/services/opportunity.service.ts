@@ -2,6 +2,13 @@ import { Opportunity, OpportunityFilter } from '@/types/opportunity';
 import { mockOpportunities } from '@/data/mockOpportunities';
 import { query as fetchLinkedIn } from 'linkedin-jobs-api';
 
+function parseStipend(stipendStr: string | null | undefined): number {
+  if (!stipendStr || stipendStr === 'Unpaid' || stipendStr === 'Varies' || stipendStr === 'Not specified') return 0;
+  const match = stipendStr.match(/[\d,]+/);
+  if (!match) return 0;
+  return parseInt(match[0].replace(/,/g, ''), 10);
+}
+
 // --- LinkedIn Scraper ---
 async function fetchLinkedInInternships(filterQuery: string, domain: string, limit: string = '10'): Promise<Opportunity[]> {
     const keyword = filterQuery || (domain && domain !== 'all' ? `${domain} internship` : 'internship');
@@ -100,12 +107,13 @@ export async function getOpportunities(filter?: OpportunityFilter): Promise<Oppo
     if (filter?.stipend === 'paid') {
         results = results.filter(o => o.stipend && o.stipend !== 'Unpaid' && o.stipend !== 'Varies');
     }
+    if (filter?.stipendMin !== undefined && filter.stipendMin > 0) {
+        results = results.filter(o => parseStipend(o.stipend) >= (filter.stipendMin as number));
+    }
 
     // Fallback if scraping returns nothing
-    if (results.length === 0 && (!filter || filter.stipend !== 'paid')) {
+    if (results.length === 0) {
       console.log("Scrapers returned empty, falling back to mock data");
-      return getMockOpportunities(filter);
-    } else if (results.length === 0) {
       return getMockOpportunities(filter);
     }
 
@@ -144,6 +152,9 @@ function getMockOpportunities(filter?: OpportunityFilter): Opportunity[] {
   }
   if (filter?.stipend === 'paid') {
     filtered = filtered.filter(o => o.stipend && o.stipend !== 'Unpaid' && o.stipend !== 'Varies');
+  }
+  if (filter?.stipendMin !== undefined && filter.stipendMin > 0) {
+    filtered = filtered.filter(o => parseStipend(o.stipend) >= (filter.stipendMin as number));
   }
 
   // Sort by deadline

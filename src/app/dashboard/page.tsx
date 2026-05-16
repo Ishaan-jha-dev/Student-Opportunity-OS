@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [type, setType] = useState<'internship' | 'competition' | null>(null);
   const [domain, setDomain] = useState<string | null>(null);
   const [stipendFilter, setStipendFilter] = useState<'all' | 'paid'>('all');
+  const [stipendMin, setStipendMin] = useState<number>(0);
 
   const domains = ['Tech', 'Finance', 'Marketing', 'Consulting', 'Management', 'Data'];
 
@@ -36,7 +37,7 @@ export default function Dashboard() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query && !type && !domain) return;
-    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: stipendFilter });
+    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: stipendFilter, stipendMin });
   };
 
   const handleTypeSelect = (selectedType: 'internship' | 'competition') => {
@@ -46,7 +47,7 @@ export default function Dashboard() {
 
   const handleDomainSelect = (selectedDomain: string) => {
     setDomain(selectedDomain);
-    executeSearch({ query, type: type || 'all', domain: selectedDomain, stipend: stipendFilter });
+    executeSearch({ query, type: type || 'all', domain: selectedDomain, stipend: stipendFilter, stipendMin });
   };
 
   const resetSearch = () => {
@@ -56,6 +57,7 @@ export default function Dashboard() {
     setDomain(null);
     setQuery('');
     setStipendFilter('all');
+    setStipendMin(0);
   };
 
   return (
@@ -211,13 +213,29 @@ export default function Dashboard() {
                 "{query}"
               </span>
             )}
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex flex-col sm:flex-row items-center gap-4">
+               <div className="flex flex-col items-center gap-1.5 bg-white border-[3px] border-[#111111] px-4 py-2 rounded-xl shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+                 <span className="text-[10px] font-black text-[#111111] uppercase tracking-widest leading-none">
+                   Min Stipend: {stipendMin > 0 ? `$${stipendMin.toLocaleString()}` : 'Any'}
+                 </span>
+                 <input 
+                   type="range" 
+                   min="0" 
+                   max="10000" 
+                   step="500"
+                   value={stipendMin}
+                   onChange={(e) => setStipendMin(Number(e.target.value))}
+                   onMouseUp={() => executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: stipendFilter, stipendMin })}
+                   onTouchEnd={() => executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: stipendFilter, stipendMin })}
+                   className="w-24 md:w-32 accent-[#FF0080] cursor-pointer h-1.5"
+                 />
+               </div>
                <select 
                  value={stipendFilter}
                  onChange={(e) => {
                     const newFilter = e.target.value as 'all' | 'paid';
                     setStipendFilter(newFilter);
-                    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: newFilter });
+                    executeSearch({ query, type: type || 'all', domain: domain || 'all', stipend: newFilter, stipendMin });
                  }}
                  className="bg-white hover:bg-[#111111] hover:text-[#FFEB3B] transition-colors border-[3px] border-[#111111] px-5 py-2.5 rounded-xl font-black text-[#111111] shadow-[2px_2px_0px_0px_rgba(17,17,17,1)] outline-none cursor-pointer uppercase tracking-wider"
                >
